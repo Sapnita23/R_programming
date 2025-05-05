@@ -1,0 +1,63 @@
+---
+title: "test"
+output: html_document
+date: "2025-05-04"
+---
+
+---
+title: "demo1"
+output: html_document
+date: "2025-05-04"
+---
+
+```{r setup, include=FALSE}
+
+library(SummarizedExperiment)
+library(S4Vectors)
+library(IRanges)
+library(GenomicRanges)
+library(DESeq2)
+library(tidyverse)
+library(airway)
+data(airway)
+airway
+sample_info <-as.data.frame(colData(airway))
+sample_info <-sample_info[,c(2,3)]
+sample_info$dex<-gsub('trt','treated',sample_info$dex)
+sample_info$dex<- gsub('untrt','untreated',sample_info$dex)
+names(sample_info)<-c('cellLine','dexamethasone')
+write.table(sample_info,file="sample_info.csv",sep=",",col.names=T,row.names=T,quote=F)
+counsData<-assay(airway)
+write.table(counsData,file="count_info.csv",sep=',',
+            col.names=T,row.names=T,quote=F)
+
+counts_data<-read.csv("C:/Users/SAPNITA SHINDE/OneDrive/Desktop/count_info.csv")
+coldata<-read.csv("C:/Users/SAPNITA SHINDE/OneDrive/Desktop/sample_info.csv")
+
+all(colnames(counts_data)%in%rownames(coldata))
+all(colnames(counts_data)==rownames(coldata))
+
+
+dds <- DESeqDataSetFromMatrix(countData = counts_data, colData = coldata, 
+                              design = ~ dexamethasone)
+head(dds)
+dim(dds)
+
+
+
+keep<-rowSums(counts(dds))>=10
+#keep
+
+
+```
+
+```{r}
+library(tidyverse) # includes ggplot2, for data visualisation. dplyr, for data manipulation.
+library(RColorBrewer) # for a colourful plot
+library(ggrepel)# for nice annotations
+
+#set input path
+path<- "C:/Users/SAPNITA SHINDE/Documents/Biostatsquid/volcano plots/TutoriaL/"
+setwd(path)
+
+```
